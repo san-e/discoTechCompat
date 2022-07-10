@@ -1,6 +1,7 @@
-from json import dump
+from json import dump, dumps
 import urllib.request
-#from pprint import pprint
+import zlib
+from pprint import pprint
 from bs4 import BeautifulSoup
 from html_table_parser.parser import HTMLTableParser
 import pandas as pd
@@ -69,3 +70,7 @@ def get_definitions():
 
 with open("data.json", "w") as f:
     dump({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, f, indent=1)
+
+#compressed = zlib.compress(dumps({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, indent=1).encode(), level = 9)
+# with open("data.json", "wb") as f:
+#     f.write(compressed)
