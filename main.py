@@ -1,12 +1,17 @@
 from json import dump, dumps
 import urllib.request
 import zlib
+import argparse
 from time import time
 from pprint import pprint
 from bs4 import BeautifulSoup
 from html_table_parser.parser import HTMLTableParser
 import pandas as pd
 from json import dump
+
+parser = argparse.ArgumentParser(description='Parse DiscoveryGC\'s techcompat_table')
+parser.add_argument('--no-compression', help='Disable file compression when writing to disk', action="store_true")
+args = parser.parse_args()
 
 def url_get_contents(url):
     request = urllib.request.Request(url=url)
@@ -69,9 +74,12 @@ def get_definitions():
         temp = ""
     return names_are_hard
 
-# with open("data.json", "w") as f:
-#     dump({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, f, indent=1)
+to_dump = {"Techcells" : get_techcells(), "Definitions" : get_definitions()}
 
-compressed = zlib.compress(dumps({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, indent=1).encode(), level = 9)
-with open(f"./saves/data{int(time())}.zlib", "wb") as f:
-    f.write(compressed)
+if args.no_compression:
+    with open(f"./saves/data{int(time())}.json", "w") as f:
+        dump(to_dump, f, indent=1)
+else:
+    compressed = zlib.compress(dumps(to_dump, indent=1).encode(), level = 9)
+    with open(f"./saves/data{int(time())}.zlib", "wb") as f:
+        f.write(compressed)
