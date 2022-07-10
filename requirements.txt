@@ -1,0 +1,2 @@
+pandas
+html-table-parser-python-3
