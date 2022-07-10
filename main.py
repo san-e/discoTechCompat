@@ -1,6 +1,7 @@
 from json import dump, dumps
 import urllib.request
 import zlib
+from time import time
 from pprint import pprint
 from bs4 import BeautifulSoup
 from html_table_parser.parser import HTMLTableParser
@@ -68,9 +69,9 @@ def get_definitions():
         temp = ""
     return names_are_hard
 
-with open("data.json", "w") as f:
-    dump({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, f, indent=1)
+# with open("data.json", "w") as f:
+#     dump({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, f, indent=1)
 
-#compressed = zlib.compress(dumps({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, indent=1).encode(), level = 9)
-# with open("data.json", "wb") as f:
-#     f.write(compressed)
+compressed = zlib.compress(dumps({"Techcells" : get_techcells(), "Definitions" : get_definitions()}, indent=1).encode(), level = 9)
+with open(f"./saves/data{int(time())}.zlib", "wb") as f:
+    f.write(compressed)
