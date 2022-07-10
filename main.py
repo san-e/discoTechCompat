@@ -1,7 +1,6 @@
 from json import dump
-from unicodedata import name
 import urllib.request
-from pprint import pprint
+#from pprint import pprint
 from bs4 import BeautifulSoup
 from html_table_parser.parser import HTMLTableParser
 import pandas as pd
