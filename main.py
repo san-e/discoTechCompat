@@ -7,10 +7,11 @@ from pprint import pprint
 from bs4 import BeautifulSoup
 from html_table_parser.parser import HTMLTableParser
 import pandas as pd
+import flint as fl
 from json import dump
 
-parser = argparse.ArgumentParser(description='Parse DiscoveryGC\'s techcompat_table')
-parser.add_argument('--no-compression', help='Disable file compression when writing to disk', action="store_true")
+parser = argparse.ArgumentParser(description='Parse DiscoveryGC\'s techcompat table.')
+parser.add_argument('--enable-compression', help='Enable file compression when writing to disk', action="store_true")
 args = parser.parse_args()
 
 def url_get_contents(url):
@@ -74,12 +75,35 @@ def get_definitions():
         temp = ""
     return names_are_hard
 
-to_dump = {"Techcells" : get_techcells(), "Definitions" : get_definitions()}
+def get_nicknames(path_to_freelancer):
+    fl.set_install_path(path_to_freelancer)
 
-if args.no_compression:
-    with open(f"./saves/data{int(time())}.json", "w") as f:
-        dump(to_dump, f, indent=1)
-else:
-    compressed = zlib.compress(dumps(to_dump, indent=1).encode(), level = 9)
-    with open(f"./saves/data{int(time())}.zlib", "wb") as f:
-        f.write(compressed)
+    nicknames = {}
+
+    for ship in fl.ships:
+        nicknames[ship.nickname] = ship.name()
+    for equipment in fl.equipment:
+        nicknames[equipment.nickname] = equipment.name()
+    for commoditie in fl.commodities:
+        nicknames[commoditie.nickname] = commoditie.name()
+    for good in fl.goods:
+        try:
+            nicknames[good.nickname] = good.name()
+        except TypeError:
+            pass
+
+    return nicknames
+
+def writeData():
+    to_dump = {"techcells" : get_techcells(), "definitions" : get_definitions(), "nicknames" : get_nicknames("A:/Spiele/Freelancer/Discovery Freelancer")}
+
+    if not args.enable_compression:
+        with open(f"./saves/data{int(time())}.json", "w") as f:
+            dump(to_dump, f, indent=1)
+    else:
+        compressed = zlib.compress(dumps(to_dump).encode(), level = 9)
+        with open(f"./saves/data{int(time())}.zlib", "wb") as f:
+            f.write(compressed)
+
+if __name__ == "__main__":
+    writeData()
